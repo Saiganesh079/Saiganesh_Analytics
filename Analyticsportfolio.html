@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --card: #1a1a26;
+    --border: #2a2a3a;
+    --accent1: #f5a623;
+    --accent2: #e8453c;
+    --accent3: #4fc3f7;
+    --accent4: #a78bfa;
+    --text: #f0f0f5;
+    --muted: #7a7a9a;
+    --sidebar-w: 260px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    position: fixed;
+    right: 0; top: 0;
+    width: var(--sidebar-w);
+    height: 100vh;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    overflow: hidden;
+  }
+
+  .sidebar-header {
+    padding: 28px 20px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .sidebar-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    line-height: 1.2;
+    color: var(--text);
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: 16px 0;
+    overflow-y: auto;
+  }
+
+  .nav-item {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    padding: 0;
+    transition: background 0.2s;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.03); }
+  .nav-item.active { background: rgba(255,255,255,0.05); }
+
+  .nav-accent-bar {
+    width: 3px;
+    flex-shrink: 0;
+    background: transparent;
+    transition: background 0.25s;
+  }
+  .nav-item.active .nav-accent-bar { background: var(--item-color, var(--accent1)); }
+
+  .nav-content {
+    padding: 14px 16px;
+    flex: 1;
+  }
+
+  .nav-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .nav-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+
+  .nav-tag {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.06);
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+  .nav-item.active .nav-tag {
+    background: rgba(255,255,255,0.1);
+    color: var(--item-color, var(--accent1));
+  }
+
+  .sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .profile-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .profile-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .profile-info {}
+  .profile-name { font-size: 13px; font-weight: 600; }
+  .profile-role { font-size: 11px; color: var(--muted); }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    margin-right: var(--sidebar-w);
+    min-height: 100vh;
+  }
+
+  /* ── HOME PANEL ── */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 70px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 800px 600px at 20% 60%, rgba(245,166,35,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 600px 400px at 80% 20%, rgba(79,195,247,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent1);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.2s forwards;
+  }
+
+  .hero-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(52px, 7vw, 96px);
+    line-height: 0.95;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.35s forwards;
+  }
+
+  .hero-name em {
+    font-style: italic;
+    color: var(--accent1);
+  }
+
+  .hero-desc {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--muted);
+    max-width: 560px;
+    margin-bottom: 48px;
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.5s forwards;
+  }
+
+  .hero-tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 52px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.65s forwards;
+  }
+
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.8s forwards;
+  }
+
+  .btn-primary {
+    padding: 13px 28px;
+    background: var(--accent1);
+    color: #000;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  .btn-ghost {
+    padding: 13px 28px;
+    background: transparent;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--text); }
+
+  .hero-stats {
+    position: absolute;
+    bottom: 50px; right: 340px;
+    display: flex;
+    gap: 40px;
+    opacity: 0;
+    animation: fadeUp 0.7s 1s forwards;
+  }
+
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: var(--accent1);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  /* ── PROJECT PANELS ── */
+  .project-panel {
+    padding: 0;
+  }
+
+  .project-hero {
+    padding: 60px 70px 50px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-hero-bg {
+    position: absolute; inset: 0;
+    opacity: 0.06;
+    background: var(--proj-gradient);
+    pointer-events: none;
+  }
+
+  .proj-breadcrumb {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .proj-breadcrumb span { color: var(--proj-color); }
+
+  .proj-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(32px, 4vw, 56px);
+    line-height: 1.05;
+    margin-bottom: 20px;
+    max-width: 700px;
+  }
+
+  .proj-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .meta-pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+
+  .proj-desc {
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--muted);
+    max-width: 680px;
+    font-weight: 300;
+  }
+
+  /* KPI row */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .kpi-card {
+    background: var(--surface);
+    padding: 28px 24px;
+    transition: background 0.2s;
+  }
+  .kpi-card:hover { background: var(--card); }
+
+  .kpi-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: var(--kpi-color, var(--accent1));
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .kpi-label {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+
+  /* Sections */
+  .proj-body {
+    padding: 50px 70px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+
+  .proj-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .proj-section.full { grid-column: 1 / -1; }
+
+  .proj-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--proj-gradient);
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+
+  .insight-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .insight-list li {
+    display: flex;
+    gap: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .insight-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--proj-color, var(--accent1));
+    flex-shrink: 0;
+    margin-top: 7px;
+  }
+
+  /* Dashboard mockup */
+  .dash-preview {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 16px;
+  }
+
+  .dash-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  .bar-chart {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  .bar-label { width: 100px; text-align: right; flex-shrink: 0; font-size: 10px; }
+  .bar-track { flex: 1; height: 20px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; position: relative; }
+  .bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--bar-color, var(--accent1));
+    width: 0;
+    transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+  }
+  .bar-fill.animated { }
+  .bar-val { width: 50px; font-size: 10px; flex-shrink: 0; }
+
+  /* Outcome box */
+  .outcome-box {
+    border: 1px solid var(--proj-color, var(--accent1));
+    padding: 20px 24px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 2px;
+  }
+  .outcome-box p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  /* Tools grid */
+  .tools-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tool-chip {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Geo map visualization */
+  .geo-vis {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 16px;
+  }
+
+  .state-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 12px;
+    border-radius: 2px;
+    font-size: 11px;
+  }
+
+  .state-name { color: var(--muted); margin-bottom: 4px; }
+  .state-val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--proj-color, var(--accent1));
+  }
+
+  /* Pie donut */
+  .donut-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    gap: 24px;
+  }
+
+  .donut-svg { width: 120px; height: 120px; }
+
+  .legend { display: flex; flex-direction: column; gap: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* Scroll fade in */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Timeline */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .tl-item {
+    display: flex;
+    gap: 16px;
+    padding-bottom: 20px;
+    position: relative;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: 16px; top: 28px;
+    bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+  .tl-item:last-child::before { display: none; }
+  .tl-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 2px solid var(--proj-color, var(--accent1));
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--proj-color, var(--accent1));
+    font-family: 'Space Mono', monospace;
+  }
+  .tl-content { padding-top: 6px; }
+  .tl-step { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+  .tl-detail { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Hover glow on nav items */
+  .nav-item:hover .nav-name { color: var(--item-color, var(--accent1)); }
+
+  /* Active indicator line anim */
+  .nav-item.active .nav-accent-bar {
+    animation: growBar 0.3s ease forwards;
+  }
+  @keyframes growBar {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .sidebar { width: 220px; }
+    .main { margin-right: 220px; }
+    .hero { padding: 50px 40px; }
+    .project-hero { padding: 40px; }
+    .proj-body { padding: 30px 40px; grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-label">Portfolio</div>
+    <div class="sidebar-title">Analytics<br>Projects</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="nav-item active" style="--item-color:#f5a623" onclick="showPanel('home', this)">
+      <div class="nav-accent-bar"></div>
+      <div class="nav-content">
+        <div class="nav-num">00</div>
+        <div class="nav-name">Overview</div>
+        <span class="nav-tag">Home</span>
+      </div>
+    </button>
+
+    <button class="nav-item" style="--item-color:#f5a623" onclick="showPanel('smartbazaar', this)">
+      <div class="nav-accent-bar"></div>
+      <div class="nav-content">
+        <div class="nav-num">01</div>
+        <div class="nav-name">Smart Bazaar Customer Analysis</div>
+        <span class="nav-tag">Retail · Power BI</span>
+      </div>
+    </button>
+
+    <button class="nav-item" style="--item-color:#4fc3f7" onclick="showPanel('cred', this)">
+      <div class="nav-accent-bar"></div>
+      <div class="nav-content">
+        <div class="nav-num">02</div>
+        <div class="nav-name">CRED Credit Utilization Dashboard</div>
+        <span class="nav-tag">Fintech · Power BI</span>
+      </div>
+    </button>
+
+    <button class="nav-item" style="--item-color:#e8453c" onclick="showPanel('oyo', this)">
+      <div class="nav-accent-bar"></div>
+      <div class="nav-content">
+        <div class="nav-num">03</div>
+        <div class="nav-name">OYO Hotel Booking Analytics</div>
+        <span class="nav-tag">Hospitality · Power BI</span>
+      </div>
+    </button>
+
+    <button class="nav-item" style="--item-color:#a78bfa" onclick="showPanel('zomato', this)">
+      <div class="nav-accent-bar"></div>
+      <div class="nav-content">
+        <div class="nav-num">04</div>
+        <div class="nav-name">Zomato Order Tracking Dashboard</div>
+        <span class="nav-tag">Food-tech · Power BI</span>
+      </div>
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="profile-chip">
+      <div class="profile-avatar">S</div>
+      <div class="profile-info">
+        <div class="profile-name">Analytics Portfolio</div>
+        <div class="profile-role">Data · Strategy · Insights</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- ════ HOME ════ -->
+  <div id="home" class="panel active">
+    <div class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-grid"></div>
+      <div class="hero-eyebrow">Data Analytics Portfolio</div>
+      <h1 class="hero-name">Turning Data<br>into <em>Decisions</em></h1>
+      <p class="hero-desc">
+        A collection of end-to-end analytics projects spanning retail, fintech, hospitality, and food-tech — built with Power BI, Excel, and statistical analysis.
+      </p>
+      <div class="hero-tags">
+        <span class="hero-tag">Power BI</span>
+        <span class="hero-tag">Data Analytics</span>
+        <span class="hero-tag">Customer Segmentation</span>
+        <span class="hero-tag">Dashboard Design</span>
+        <span class="hero-tag">Statistical Modeling</span>
+        <span class="hero-tag">Business Intelligence</span>
+      </div>
+      <div class="hero-cta">
+        <button class="btn-primary" onclick="showPanel('smartbazaar', document.querySelectorAll('.nav-item')[1])">Explore Projects</button>
+        <button class="btn-ghost">Download CV</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-num">4</div>
+          <div class="stat-label">Projects</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">58K+</div>
+          <div class="stat-label">Records Analyzed</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">3</div>
+          <div class="stat-label">Industries</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project cards grid -->
+    <div style="padding: 50px 70px; display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-top: 1px solid var(--border);">
+
+      <div class="proj-card fade-in" onclick="showPanel('smartbazaar', document.querySelectorAll('.nav-item')[1])"
+           style="background:var(--surface); padding:32px; cursor:pointer; transition: background 0.2s;"
+           onmouseenter="this.style.background='var(--card)'" onmouseleave="this.style.background='var(--surface)'">
+        <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:3px; color:#f5a623; margin-bottom:12px; text-transform:uppercase;">01 · Retail Analytics</div>
+        <div style="font-family:'DM Serif Display',serif; font-size:24px; margin-bottom:12px; line-height:1.2">Smart Bazaar Customer Analysis</div>
+        <p style="font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:20px;">Customer segmentation, statewise performance, and product sales analysis across India using Power BI dashboards.</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="tool-chip">Power BI</span><span class="tool-chip">Customer Segmentation</span><span class="tool-chip">Geo Analysis</span>
+        </div>
+      </div>
+
+      <div class="proj-card fade-in" onclick="showPanel('cred', document.querySelectorAll('.nav-item')[2])"
+           style="background:var(--surface); padding:32px; cursor:pointer; transition: background 0.2s;"
+           onmouseenter="this.style.background='var(--card)'" onmouseleave="this.style.background='var(--surface)'">
+        <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:3px; color:#4fc3f7; margin-bottom:12px; text-transform:uppercase;">02 · Fintech Analytics</div>
+        <div style="font-family:'DM Serif Display',serif; font-size:24px; margin-bottom:12px; line-height:1.2">CRED Credit Utilization Dashboard</div>
+        <p style="font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:20px;">Analyzed 7,298 credit card customers to study credit utilization patterns across income, education, and demographics.</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="tool-chip">Power BI</span><span class="tool-chip">Credit Risk</span><span class="tool-chip">KPI Design</span>
+        </div>
+      </div>
+
+      <div class="proj-card fade-in" onclick="showPanel('oyo', document.querySelectorAll('.nav-item')[3])"
+           style="background:var(--surface); padding:32px; cursor:pointer; transition: background 0.2s;"
+           onmouseenter="this.style.background='var(--card)'" onmouseleave="this.style.background='var(--surface)'">
+        <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:3px; color:#e8453c; margin-bottom:12px; text-transform:uppercase;">03 · Hospitality Analytics</div>
+        <div style="font-family:'DM Serif Display',serif; font-size:24px; margin-bottom:12px; line-height:1.2">OYO Hotel Booking Analytics</div>
+        <p style="font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:20px;">Deep-dive into 58.7K bookings and 166M revenue across 22 states, analyzing booking trends, hotel types, and customer segments.</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="tool-chip">Power BI</span><span class="tool-chip">Revenue Analysis</span><span class="tool-chip">Location BI</span>
+        </div>
+      </div>
+
+      <div class="proj-card fade-in" onclick="showPanel('zomato', document.querySelectorAll('.nav-item')[4])"
+           style="background:var(--surface); padding:32px; cursor:pointer; transition: background 0.2s;"
+           onmouseenter="this.style.background='var(--card)'" onmouseleave="this.style.background='var(--surface)'">
+        <div style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:3px; color:#a78bfa; margin-bottom:12px; text-transform:uppercase;">04 · Food-tech Analytics</div>
+        <div style="font-family:'DM Serif Display',serif; font-size:24px; margin-bottom:12px; line-height:1.2">Zomato Order Tracking Dashboard</div>
+        <p style="font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:20px;">Statewise order patterns, most-ordered food items, average ratings, and top city performance across India.</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="tool-chip">Power BI</span><span class="tool-chip">Order Analytics</span><span class="tool-chip">Word Cloud</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ SMART BAZAAR ════ -->
+  <div id="smartbazaar" class="panel project-panel" style="--proj-color:#f5a623; --proj-gradient:linear-gradient(135deg,#f5a623,#f97316)">
+
+    <div class="project-hero">
+      <div class="project-hero-bg" style="background:radial-gradient(ellipse 600px 400px at 0% 50%, rgba(245,166,35,0.3), transparent)"></div>
+      <div class="proj-breadcrumb">Portfolio <span>/ 01</span> / Smart Bazaar</div>
+      <h2 class="proj-title">Smart Bazaar<br>Customer Analysis</h2>
+      <div class="proj-meta">
+        <span class="meta-pill" style="color:#f5a623; border-color:rgba(245,166,35,0.4); background:rgba(245,166,35,0.08)">Retail · Power BI</span>
+        <span class="meta-pill" style="color:var(--muted); border-color:var(--border)">Customer Segmentation</span>
+        <span class="meta-pill" style="color:var(--muted); border-color:var(--border)">Geographic Analysis</span>
+      </div>
+      <p class="proj-desc">Performed customer analytics to identify behavioral patterns and marketing opportunities across Indian states. Built multi-page dashboards visualizing product sales, regional performance, and profitability metrics using Power BI and Excel.</p>
+    </div>
+
+    <div class="kpi-row" style="--kpi-color:#f5a623">
+      <div class="kpi-card fade-in">
+        <div class="kpi-value">₹4.79Cr</div>
+        <div class="kpi-label">Total Sales</div>
+      </div>
+      <div class="kpi-card fade-in">
+        <div class="kpi-value">₹69L</div>
+        <div class="kpi-label">Total Profit</div>
+      </div>
+      <div class="kpi-card fade-in">
+        <div class="kpi-value">#1</div>
+        <div class="kpi-label">Western Wear (Top Product)</div>
+      </div>
+      <div class="kpi-card fade-in">
+        <div class="kpi-value">Haryana</div>
+        <div class="kpi-label">Top Performing State</div>
+      </div>
+    </div>
+
+    <div class="proj-body" style="--proj-color:#f5a623; --proj-gradient:linear-gradient(135deg,#f5a623,#f97316)">
+
+      <div class="proj-section fade-in">
+        <div class="section-label">Top 10 Products by Sales</div>
+        <div class="dash-preview">
+          <div class="dash-toolbar">
+            <div class="dot" style="background:#e8453c"></div>
+            <div class="dot" style="background:#f5a623"></div>
+            <div class="dot" style="background:#4caf50"></div>
+          </div>
+          <div class="bar-chart" id="sb-bars">
+            <div class="bar-row"><span class="bar-label">Western Wear</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#f5a623" data-pct="100"></div></div><span class="bar-val">₹40.4L</span></div>
+            <div class="bar-row"><span class="bar-label">Sport Wear</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#f97316" data-pct="83"></div></div><span class="bar-val">₹33.4L</span></div>
+            <div class="bar-row"><span class="bar-label">Ethnic Wear</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#f5a623" data-pct="78"></div></div><span class="bar-val">₹31.4L</span></div>
+            <div class="bar-row"><span class="bar-label">Sleep Wear</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#f97316" data-pct="77"></div></div><span class="bar-val">₹31.1L</span></div>
+            <div class="bar-row"><span class="bar-label">Vegetables</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#f5a623" data-pct="73"></div></div><span class="bar-val">₹29.5L</span></div>
+            <div class="bar-row"><span class="bar-label">Milk</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#f97316" data-pct="62"></div></div><span class="bar-val">₹24.9L</span></div>
+            <div class="bar-row"><span class="bar-label">Accessories</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#f5a623" data-pct="56"></div></div><span class="bar-val">₹22.5L</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="proj-section fade-in">
+        <div class="section-label">State Performance Highlights</div>
+        <div class="geo-vis" style="--proj-color:#f5a623">
+          <div class="state-card"><div class="state-name">Haryana 🏆</div><div class="state-val">₹36.6L</div></div>
+          <div class="state-card"><div class="state-name">Assam</div><div class="state-val">₹35.4L</div></div>
+          <div class="state-card"><div class="state-name">Madhya Pradesh</div><div class="state-val">₹31.6L</div></div>
+          <div class="state-card"><div class="state-name">Maharashtra</div><div class="state-val">₹28.9L</div></div>
+          <div class="state-card"><div class="state-name">Tamil Nadu</div><div class="state-val">₹27.5L</div></div>
+          <div class="state-card"><div class="state-name">Jharkhand</div><div class="state-val">₹27.2L</div></div>
+        </div>
+        <div style="margin-top:12px; padding:12px; background:rgba(245,166,35,0.06); border:1px solid rgba(245,166,35,0.2); font-size:12px; color:var(--muted); border-radius:2px;">
+          📍 Bottom performing states include Uttarakhand (₹2.1L), Bihar (₹1.9L), and Daman & Diu (₹4.9L)
+        </div>
+      </div>
+
+      <div class="proj-section fade-in">
+        <div class="section-label">Key Insights</div>
+        <div class="section-title">What the data reveals</div>
+        <ul class="insight-list">
+          <li><div class="insight-dot" style="background:#f5a623"></div><span>Apparel dominates — Western, Sport, Ethnic &amp; Sleep Wear account for 4 of the top 5 product categories by sales volume.</span></li>
+          <li><div class="insight-dot" style="background:#f5a623"></div><span>Northern states (Haryana, Assam, UP) consistently outperform southern and eastern counterparts in overall sales.</span></li>
+          <li><div class="insight-dot" style="background:#f5a623"></div><span>Profit margins are healthy across top categories — Western Wear leads with ₹8.65L profit on ₹40.4L sales (~21% margin).</span></li>
+          <li><div class="insight-dot" style="background:#f5a623"></div><span>Grocery staples (Vegetables, Milk, Butter) show strong volume but lower margins — typical of FMCG segments.</span></li>
+        </ul>
+      </div>
+
+      <div class="proj-section fade-in">
+        <div class="section-label">Tools &amp; Methods</div>
+        <div class="section-title">Methodology</div>
+        <div class="timeline" style="--proj-color:#f5a623">
+          <div class="tl-item"><div class="tl-dot">1</div><div class="tl-content"><div class="tl-step">Data Collection &amp; Cleaning</div><div class="tl-detail">Collected retail transaction datasets, handled missing values and standardized state names.</div></div></div>
+          <div class="tl-item"><div class="tl-dot">2</div><div class="tl-content"><div class="tl-step">Segmentation Analysis</div><div class="tl-detail">Segmented products and regions to uncover purchasing patterns across demographics.</div></div></div>
+          <div class="tl-item"><div class="tl-dot">3</div><div class="tl-content"><div class="tl-step">Dashboard Development</div><div class="tl-detail">Built 3 interactive Power BI pages: Product Segment, Statewise Performance, and Sales &amp; Profit maps.</div></div></div>
+          <div class="tl-item"><div class="tl-dot">4</div><div class="tl-content"><div class="tl-step">Insight Generation</div><div class="tl-detail">Derived actionable insights for marketing optimization and customer retention strategies.</div></div></div>
+        </div>
+      </div>
+
+      <div class="proj-section full fade-in">
+        <div class="section-label">Project Outcome</div>
+        <div class="outcome-box" style="--proj-color:#f5a623">
+          <p>Demonstrated ability to use <strong>business analytics tools to derive strategic marketing insights</strong>. The dashboard enables category managers to identify underperforming regions and prioritize high-margin product lines. Statewise analysis supports targeted promotions and inventory planning across India's diverse retail landscape.</p>
+        </div>
+        <div style="margin-top:20px">
+          <div class="section-label">Stack Used</div>
+          <div class="tools-grid">
+            <span class="tool-chip">Power BI</span>
+            <span class="tool-chip">Excel</span>
+            <span class="tool-chip">Mapbox</span>
+            <span class="tool-chip">DAX</span>
+            <span class="tool-chip">Word Cloud Visual</span>
+            <span class="tool-chip">Geo Mapping</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ CRED ════ -->
+  <div id="cred" class="panel project-panel" style="--proj-color:#4fc3f7; --proj-gradient:linear-gradient(135deg,#4fc3f7,#0288d1)">
+
+    <div class="project-hero">
+      <div class="project-hero-bg" style="background:radial-gradient(ellipse 600px 400px at 0% 50%, rgba(79,195,247,0.3), transparent)"></div>
+      <div class="proj-breadcrumb">Portfolio <span>/ 02</span> / CRED</div>
+      <h2 class="proj-title">Credit Utilization &amp;<br>Customer Segmentation</h2>
+      <div class="proj-meta">
+        <span class="meta-pill" style="color:#4fc3f7; border-color:rgba(79,195,247,0.4); background:rgba(79,195,247,0.08)">Fintech · Power BI</span>
+        <span class="meta-pill" style="color:var(--muted); border-color:var(--border)">Credit Risk Analysis</span>
+        <span class="meta-pill" style="color:var(--muted); border-color:var(--border)">7,298 Customers</span>
+      </div>
+      <p class="proj-desc">Built an interactive Power BI dashboard analyzing 7,298 credit card customers to study credit utilization and financial behavior. Designed KPIs and segmentation analysis across income, education, marital status, and age groups to identify high-utilization segments and support lending strategies.</p>
+    </div>
+
+    <div class="kpi-row" style="--kpi-color:#4fc3f7">
+      <div class="kpi-card fade-in">
+        <div class="kpi-value">7,298</div>
+        <div class="kpi-label">Total Customers</div>
+      </div>
+      <div class="kpi-card fade-in">
+        <div class="kpi-value">0.28</div>
+        <div class="kpi-label">Avg. Credit Utilization</div>
+      </div>
+      <div class="kpi-card fade-in">
+        <div class="kpi-value">₹8.62K</div>
+        <div class="kpi-label">Avg. Credit Limit</div>
+      </div>
+      <div class="kpi-card fade-in">
+        <div class="kpi-value">35.95</div>
+        <div class="kpi-label">Avg. Months on Books</div>
+      </div>
+    </div>
+
+    <div class="proj-body" style="--proj-color:#4fc3f7; --proj-gradient:linear-gradient(135deg,#4fc3f7,#0288d1)">
+
+      <div class="proj-section fade-in">
+        <div class="section-label">Utilization by Income Category</div>
+        <div class="dash-preview">
+          <div class="dash-toolbar">
+            <div class="dot" style="background:#4fc3f7"></div>
+            <div class="dot" style="background:#0288d1"></div>
+            <div class="dot" style="background:#01579b"></div>
+          </div>
+          <div class="bar-chart">
+            <div class="bar-row"><span class="bar-label">&lt;30k</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#4fc3f7" data-pct="100"></div></div><span class="bar-val">1,050</span></div>
+            <div class="bar-row"><span class="bar-label">31–50k</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#4fc3f7" data-pct="45"></div></div><span class="bar-val">468</span></div>
+            <div class="bar-row"><span class="bar-label">51–70k</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#4fc3f7" data-pct="23"></div></div><span class="bar-val">243</span></div>
+            <div class="bar-row"><span class="bar-label">71–110k</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#4fc3f7" data-pct="19"></div></div><span class="bar-val">202</span></div>
+            <div class="bar-row"><span class="bar-label">111k+</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#0288d1" data-pct="7"></div></div><span class="bar-val">74</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="proj-section fade-in">
+        <div class="section-label">Customer Category Split</div>
+        <div class="donut-wrap">
+          <svg class="donut-svg" viewBox="0 0 42 42">
+            <circle cx="21" cy="21" r="15.91549" fill="transparent" stroke="#1a1a26" stroke-width="8"/>
+            <circle cx="21" cy="21" r="15.91549" fill="transparent" stroke="#4fc3f7" stroke-width="8"
+                    stroke-dasharray="94.05 5.95" stroke-dashoffset="25" style="transition:stroke-dasharray 1s ease"/>
+            <circle cx="21" cy="21" r="15.91549" fill="transparent" stroke="#0288d1" stroke-width="8"
+                    stroke-dasharray="5.95 94.05" stroke-dashoffset="-69.05"/>
+          </svg>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#4fc3f7"></div><span>Gold — 6.86K (94.05%)</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#0288d1"></div><span>Platinum — 0.43K (5.95%)</span></div>
+          </div>
+        </div>
+        <div class="bar-chart" style="padding:0 16px 16px">
+          <div class="bar-row"><span class="bar-label">Post Grad</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#4fc3f7" data-pct="100"></div></div><span class="bar-val">1,217</span></div>
+          <div class="bar-row"><span class="bar-label">Graduate</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#4fc3f7" data-pct="40"></div></div><span class="bar-val">483</span></div>
+          <div class="bar-row"><span class="bar-label">Under Grad</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#0288d1" data-pct="28"></div></div><span class="bar-val">337</span></div>
+        </div>
+      </div>
+
+      <div class="proj-section fade-in">
+        <div class="section-label">Key Insights</div>
+        <div class="section-title">Credit behavior patterns</div>
+        <ul class="insight-list">
+          <li><div class="insight-dot" style="background:#4fc3f7"></div><span>Lower-income customers (&lt;₹30K) have the highest utilization ratios — 14× more than high-income (111K+) customers.</span></li>
+          <li><div class="insight-dot" style="background:#4fc3f7"></div><span>Post-graduate customers show highest utilization, suggesting education level correlates with credit dependency.</span></li>
+          <li><div class="insight-dot" style="background:#4fc3f7"></div><span>Married customers (52%) drive most utilization, likely due to household expenses and lifestyle spending.</span></li>
+          <li><div class="insight-dot" style="background:#4fc3f7"></div><span>Males have 75.47% higher average credit limits (₹12.63K) vs females (₹4.11K) — a significant gender gap in credit access.</span></li>
+          <li><div class="insight-dot" style="background:#4fc3f7"></div><span>94% of customers are in the Gold tier — opportunity to upsell Platinum benefits to eligible high-spending segments.</span></li>
+        </ul>
+      </div>
+
+      <div class="proj-section fade-in">
+        <div class="section-label">Customer Profile</div>
+        <div class="section-title">Demographics</div>
+        <div class="timeline" style="--proj-color:#4fc3f7">
+          <div class="tl-item"><div class="tl-dot">→</div><div class="tl-content"><div class="tl-step">Male: 3.9K | Female: 3.4K</div><div class="tl-detail">Slightly male-skewed base with significant credit limit disparity.</div></div></div>
+          <div class="tl-item"><div class="tl-dot">→</div><div class="tl-content"><div class="tl-step">Married: 3.6K | Single: 3.0K</div><div class="tl-detail">Married customers form majority, aligning with higher utilization rates.</div></div></div>
+          <div class="tl-item"><div class="tl-dot">→</div><div class="tl-content"><div class="tl-step">Income &lt;₹30K: 2.8K customers</div><div class="tl-detail">Largest income segment — key risk group for credit monitoring.</div></div></div>
+          <div class="tl-item"><div class="tl-dot">→</div><div class="tl-content"><div class="tl-step">Avg. Age: 46 | Avg. Tenure: 36 months</div><div class="tl-detail">Mature, established customer base with long-standing relationships.</div></div></div>
+        </div>
+      </div>
+
+      <div class="proj-section full fade-in">
+        <div class="section-label">Project Outcome</div>
+        <div class="outcome-box" style="--proj-color:#4fc3f7">
+          <p>Generated insights to support <strong>credit risk assessment, customer segmentation, and data-driven lending strategies</strong>. The dual-dashboard approach (Credit Utilization + Customer Profile) enables risk teams to proactively identify over-leveraged segments and design targeted credit limit revisions, while marketing teams can identify upsell pathways for Platinum conversion.</p>
+        </div>
+        <div style="margin-top:20px">
+          <div class="tools-grid">
+            <span class="tool-chip">Power BI</span>
+            <span class="tool-chip">DAX</span>
+            <span class="tool-chip">KPI Cards</span>
+            <span class="tool-chip">Donut Charts</span>
+            <span class="tool-chip">Bar Visuals</span>
+            <span class="tool-chip">Line Charts</span>
+            <span class="tool-chip">Customer Segmentation</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ OYO ════ -->
+  <div id="oyo" class="panel project-panel" style="--proj-color:#e8453c; --proj-gradient:linear-gradient(135deg,#e8453c,#c62828)">
+
+    <div class="project-hero">
+      <div class="project-hero-bg" style="background:radial-gradient(ellipse 600px 400px at 0% 50%, rgba(232,69,60,0.3), transparent)"></div>
+      <div class="proj-breadcrumb">Portfolio <span>/ 03</span> / OYO</div>
+      <h2 class="proj-title">OYO Hotel Booking<br>Analytics Dashboard</h2>
+      <div class="proj-meta">
+        <span class="meta-pill" style="color:#e8453c; border-color:rgba(232,69,60,0.4); background:rgba(232,69,60,0.08)">Hospitality · Power BI</span>
+        <span class="meta-pill" style="color:var(--muted); border-color:var(--border)">58.74K Bookings</span>
+        <span class="meta-pill" style="color:var(--muted); border-color:var(--border)">22 States · 41 Cities</span>
+      </div>
+      <p class="proj-desc">Developed a Power BI dashboard analyzing 58.7K bookings and ₹166M revenue to evaluate hotel booking trends and performance. Covered monthly trends, peak booking times, location analytics, hotel type performance, and customer behavior segmentation.</p>
+    </div>
+
+    <div class="kpi-row" style="--kpi-color:#e8453c">
+      <div class="kpi-card fade-in">
+        <div class="kpi-value">58.74K</div>
+        <div class="kpi-label">Total Bookings</div>
+      </div>
+      <div class="kpi-card fade-in">
+        <div class="kpi-value">₹166M</div>
+        <div class="kpi-label">Total Revenue</div>
+      </div>
+      <div class="kpi-card fade-in">
+        <div class="kpi-value">3.1</div>
+        <div class="kpi-label">Avg. Rating</div>
+      </div>
+      <div class="kpi-card fade-in">
+        <div class="kpi-value">77.8%</div>
+        <div class="kpi-label">Leisure Travelers</div>
+      </div>
+    </div>
+
+    <div class="proj-body" style="--proj-color:#e8453c; --proj-gradient:linear-gradient(135deg,#e8453c,#c62828)">
+
+      <div class="proj-section fade-in">
+        <div class="section-label">Monthly Booking Trends</div>
+        <div class="dash-preview">
+          <div class="dash-toolbar">
+            <div class="dot" style="background:#e8453c"></div>
+            <div class="dot" style="background:#c62828"></div>
+            <div class="dot" style="background:#b71c1c"></div>
+          </div>
+          <div class="bar-chart">
+            <div class="bar-row"><span class="bar-label">January</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#e8453c" data-pct="84"></div></div><span class="bar-val">6.9K</span></div>
+            <div class="bar-row"><span class="bar-label">February</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#e8453c" data-pct="78"></div></div><span class="bar-val">6.4K</span></div>
+            <div class="bar-row"><span class="bar-label">March</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#c62828" data-pct="52"></div></div><span class="bar-val">4.3K</span></div>
+            <div class="bar-row"><span class="bar-label">June</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#c62828" data-pct="61"></div></div><span class="bar-val">5.0K</span></div>
+            <div class="bar-row"><span class="bar-label">July</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#7f0000" data-pct="27"></div></div><span class="bar-val">2.2K</span></div>
+            <div class="bar-row"><span class="bar-label">December</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#e8453c" data-pct="100"></div></div><span class="bar-val">8.2K</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="proj-section fade-in">
+        <div class="section-label">Hotel Type Performance</div>
+        <div class="bar-chart" style="padding:0 0 8px">
+          <div style="font-size:11px; color:var(--muted); margin-bottom:10px; font-family:'Space Mono',monospace">Bookings by Type</div>
+          <div class="bar-row"><span class="bar-label">Rooms</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#e8453c" data-pct="100"></div></div><span class="bar-val">7.9K</span></div>
+          <div class="bar-row"><span class="bar-label">Premium</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#e8453c" data-pct="94"></div></div><span class="bar-val">7.4K</span></div>
+          <div class="bar-row"><span class="bar-label">Capital O</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#c62828" data-pct="86"></div></div><span class="bar-val">6.8K</span></div>
+          <div class="bar-row"><span class="bar-label">Studio Stay</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#c62828" data-pct="68"></div></div><span class="bar-val">5.4K</span></div>
+        </div>
+        <div style="margin-top:12px; padding:12px; background:rgba(232,69,60,0.06); border:1px solid rgba(232,69,60,0.2); font-size:12px; color:var(--muted); border-radius:2px;">
+          💡 Studio Stay has the highest avg. price (₹8K) while Capital O has the highest rating (3.42)
+        </div>
+      </div>
+
+      <div class="proj-section fade-in">
+        <div class="section-label">Key Insights</div>
+        <div class="section-title">Booking patterns</div>
+        <ul class="insight-list">
+          <li><div class="insight-dot" style="background:#e8453c"></div><span>December is peak season with 8.2K bookings; July is lowest at 2.2K — suggesting strong year-end travel demand.</span></li>
+          <li><div class="insight-dot" style="background:#e8453c"></div><span>Evening hours (18:00–21:00) drive the most bookings (14.6K) — optimize marketing for evening push notifications.</span></li>
+          <li><div class="insight-dot" style="background:#e8453c"></div><span>Maharashtra is the #1 state; Shimla, Delhi, and Panjim are top destination cities.</span></li>
+          <li><div class="insight-dot" style="background:#e8453c"></div><span>75.22% of payments are post-checkout — suggests trust in OYO's pay-later model.</span></li>
+          <li><div class="insight-dot" style="background:#e8453c"></div><span>64.55% of guests are non-couples; leisure travelers dominate (77.79%) over business travelers.</span></li>
+        </ul>
+      </div>
+
+      <div class="proj-section fade-in">
+        <div class="section-label">Location Analysis</div>
+        <div class="geo-vis" style="--proj-color:#e8453c">
+          <div class="state-card"><div class="state-name">Maharashtra 🏆</div><div class="state-val">~8K</div></div>
+          <div class="state-card"><div class="state-name">Goa</div><div class="state-val">~6K</div></div>
+          <div class="state-card"><div class="state-name">Delhi</div><div class="state-val">~6K</div></div>
+          <div class="state-card"><div class="state-name">Karnataka</div><div class="state-val">~5.5K</div></div>
+          <div class="state-card"><div class="state-name">Himachal</div><div class="state-val">~5K</div></div>
+          <div class="state-card"><div class="state-name">Chhattisgarh ↓</div><div class="state-val">Lowest</div></div>
+        </div>
+      </div>
+
+      <div class="proj-section full fade-in">
+        <div class="section-label">Project Outcome</div>
+        <div class="outcome-box" style="--proj-color:#e8453c">
+          <p>Identified <strong>leisure travelers and couples as the dominant booking segments</strong>, supporting targeted marketing strategies. Analyzed booking time patterns to recommend optimal push notification windows. Location intelligence revealed underserved states (Bihar, Chhattisgarh) with growth potential for OYO's expansion strategy.</p>
+        </div>
+        <div style="margin-top:20px">
+          <div class="tools-grid">
+            <span class="tool-chip">Power BI</span><span class="tool-chip">4 Dashboard Pages</span><span class="tool-chip">DAX Measures</span><span class="tool-chip">Geo Maps</span><span class="tool-chip">Donut Charts</span><span class="tool-chip">Time-series Analysis</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ZOMATO ════ -->
+  <div id="zomato" class="panel project-panel" style="--proj-color:#a78bfa; --proj-gradient:linear-gradient(135deg,#a78bfa,#7c3aed)">
+
+    <div class="project-hero">
+      <div class="project-hero-bg" style="background:radial-gradient(ellipse 600px 400px at 0% 50%, rgba(167,139,250,0.3), transparent)"></div>
+      <div class="proj-breadcrumb">Portfolio <span>/ 04</span> / Zomato</div>
+      <h2 class="proj-title">Zomato Order Tracking<br>Dashboard</h2>
+      <div class="proj-meta">
+        <span class="meta-pill" style="color:#a78bfa; border-color:rgba(167,139,250,0.4); background:rgba(167,139,250,0.08)">Food-tech · Power BI</span>
+        <span class="meta-pill" style="color:var(--muted); border-color:var(--border)">Order Analytics</span>
+        <span class="meta-pill" style="color:var(--muted); border-color:var(--border)">Multi-state Coverage</span>
+      </div>
+      <p class="proj-desc">Built an interactive Zomato order tracking dashboard analyzing statewise order volumes, most-ordered food items, average order value, food ratings, and top performing cities. Identified key demand patterns and regional food preferences to support restaurant and logistics decisions.</p>
+    </div>
+
+    <div class="kpi-row" style="--kpi-color:#a78bfa">
+      <div class="kpi-card fade-in">
+        <div class="kpi-value">₹295.5</div>
+        <div class="kpi-label">Avg. Order Value</div>
+      </div>
+      <div class="kpi-card fade-in">
+        <div class="kpi-value">3.489</div>
+        <div class="kpi-label">Avg. Food Rating</div>
+      </div>
+      <div class="kpi-card fade-in">
+        <div class="kpi-value">Biriyani</div>
+        <div class="kpi-label">Most Ordered Item</div>
+      </div>
+      <div class="kpi-card fade-in">
+        <div class="kpi-value">Ludhiana</div>
+        <div class="kpi-label">Top City by Orders</div>
+      </div>
+    </div>
+
+    <div class="proj-body" style="--proj-color:#a78bfa; --proj-gradient:linear-gradient(135deg,#a78bfa,#7c3aed)">
+
+      <div class="proj-section fade-in">
+        <div class="section-label">Most Ordered Food Items</div>
+        <div class="dash-preview">
+          <div class="dash-toolbar">
+            <div class="dot" style="background:#a78bfa"></div>
+            <div class="dot" style="background:#7c3aed"></div>
+            <div class="dot" style="background:#5b21b6"></div>
+          </div>
+          <div class="bar-chart">
+            <div class="bar-row"><span class="bar-label">Biriyani</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#a78bfa" data-pct="100"></div></div><span class="bar-val">~1,050</span></div>
+            <div class="bar-row"><span class="bar-label">Mint Sauce</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#a78bfa" data-pct="74"></div></div><span class="bar-val">~780</span></div>
+            <div class="bar-row"><span class="bar-label">Onion Chutney</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#7c3aed" data-pct="45"></div></div><span class="bar-val">~480</span></div>
+            <div class="bar-row"><span class="bar-label">Red Sauce</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#7c3aed" data-pct="31"></div></div><span class="bar-val">~325</span></div>
+            <div class="bar-row"><span class="bar-label">Lime Pickle</span><div class="bar-track"><div class="bar-fill" style="--bar-color:#5b21b6" data-pct="18"></div></div><span class="bar-val">~195</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="proj-section fade-in">
+        <div class="section-label">Top Cities by Orders</div>
+        <div class="geo-vis" style="--proj-color:#a78bfa">
+          <div class="state-card"><div class="state-name">Ludhiana 🏆</div><div class="state-val">216</div></div>
+          <div class="state-card"><div class="state-name">Udaipur</div><div class="state-val">214</div></div>
+          <div class="state-card"><div class="state-name">Chennai</div><div class="state-val">203</div></div>
+          <div class="state-card"><div class="state-name">Bubneshwar</div><div class="state-val">194</div></div>
+          <div class="state-card"><div class="state-name">Ananthpur</div><div class="state-val">192</div></div>
+          <div class="state-card"><div class="state-name">Pan-India</div><div class="state-val">Multi-state</div></div>
+        </div>
+        <div style="margin-top:12px; padding:12px; background:rgba(167,139,250,0.06); border:1px solid rgba(167,139,250,0.2); font-size:12px; color:var(--muted); border-radius:2px;">
+          📍 Statewise breakdown: Rajasthan (275), Madhya Pradesh (167), Uttar Pradesh (213), Orissa (194)
+        </div>
+      </div>
+
+      <div class="proj-section fade-in">
+        <div class="section-label">Key Insights</div>
+        <div class="section-title">Food ordering patterns</div>
+        <ul class="insight-list">
+          <li><div class="insight-dot" style="background:#a78bfa"></div><span>Biriyani dominates all other items by 35%+ — a clear category leader worth prioritizing for restaurant partnerships.</span></li>
+          <li><div class="insight-dot" style="background:#a78bfa"></div><span>Condiments (Mint Sauce, Onion Chutney, Red Sauce) feature heavily — indicating high add-on order behavior worth upselling.</span></li>
+          <li><div class="insight-dot" style="background:#a78bfa"></div><span>Rajasthan leads statewise orders (275), driven by Udaipur — a tourist-heavy city with high food service demand.</span></li>
+          <li><div class="insight-dot" style="background:#a78bfa"></div><span>Average food rating of 3.489 suggests room for quality improvement — targeting restaurants below 3.0 for intervention.</span></li>
+          <li><div class="insight-dot" style="background:#a78bfa"></div><span>Average order value of ₹295.5 positions Zomato in the affordable-mid segment, reflecting India's price-sensitive market.</span></li>
+        </ul>
+      </div>
+
+      <div class="proj-section fade-in">
+        <div class="section-label">Analysis Methodology</div>
+        <div class="section-title">Approach</div>
+        <div class="timeline" style="--proj-color:#a78bfa">
+          <div class="tl-item"><div class="tl-dot">1</div><div class="tl-content"><div class="tl-step">Order Data Aggregation</div><div class="tl-detail">Compiled order records across multiple Indian states, standardizing city and product names.</div></div></div>
+          <div class="tl-item"><div class="tl-dot">2</div><div class="tl-content"><div class="tl-step">Product Frequency Analysis</div><div class="tl-detail">Ranked food items by order count and built word cloud + bar chart visualizations.</div></div></div>
+          <div class="tl-item"><div class="tl-dot">3</div><div class="tl-content"><div class="tl-step">Geographic Mapping</div><div class="tl-detail">Mapped statewise orders using Mapbox choropleth to identify regional demand clusters.</div></div></div>
+          <div class="tl-item"><div class="tl-dot">4</div><div class="tl-content"><div class="tl-step">KPI Dashboard Design</div><div class="tl-detail">Created interactive filters, treemaps for top cities, and a word cloud for trending items.</div></div></div>
+        </div>
+      </div>
+
+      <div class="proj-section full fade-in">
+        <div class="section-label">Project Outcome</div>
+        <div class="outcome-box" style="--proj-color:#a78bfa">
+          <p>Dashboard enables food-tech operators to identify <strong>regional demand hotspots, optimize menu recommendations, and improve delivery logistics</strong>. Item-level frequency analysis reveals upsell opportunities through condiment bundling, while city-level rankings support restaurant acquisition strategy in underserved but high-potential markets.</p>
+        </div>
+        <div style="margin-top:20px">
+          <div class="tools-grid">
+            <span class="tool-chip">Power BI</span><span class="tool-chip">Mapbox Geo Maps</span><span class="tool-chip">Word Cloud Visual</span><span class="tool-chip">Treemap</span><span class="tool-chip">Bar Charts</span><span class="tool-chip">DAX</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  function showPanel(id, btn) {
+    // Hide all panels
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    // Deactivate all nav items
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+    document.getElementById(id).classList.add('active');
+    if (btn) btn.classList.add('active');
+
+    // Scroll to top
+    window.scrollTo(0, 0);
+
+    // Trigger bar animations for the active panel
+    setTimeout(animateBars, 100);
+    // Trigger fade-ins
+    setTimeout(triggerFadeIns, 150);
+  }
+
+  function animateBars() {
+    const activePanel = document.querySelector('.panel.active');
+    if (!activePanel) return;
+    activePanel.querySelectorAll('.bar-fill').forEach(bar => {
+      const pct = bar.dataset.pct || 100;
+      bar.style.width = pct + '%';
+    });
+  }
+
+  function triggerFadeIns() {
+    const activePanel = document.querySelector('.panel.active');
+    if (!activePanel) return;
+    const items = activePanel.querySelectorAll('.fade-in');
+    items.forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), i * 80);
+    });
+  }
+
+  // Intersection observer for scroll-based animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // Animate bars within visible section
+        entry.target.querySelectorAll('.bar-fill').forEach(bar => {
+          const pct = bar.dataset.pct || 100;
+          bar.style.width = pct + '%';
+        });
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Initial load animations
+  window.addEventListener('load', () => {
+    animateBars();
+    triggerFadeIns();
+  });
+</script>
+
+</body>
+</html>
